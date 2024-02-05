@@ -1,0 +1,23 @@
+{
+  "name": "nifi-api-req",
+  "version": "1.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "nifi",
+    "nifi-api"
+  ],
+  "author": "",
+  "license": "MIT",
+  "files": [
+    "bin",
+    "index.js"
+  ],
+  "dependencies": {
+    "https": "^1.0.0",
+    "querystring": "^0.2.1"
+  }
+}
