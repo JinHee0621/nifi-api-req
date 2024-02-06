@@ -7,7 +7,7 @@ const NIFI_INIT = {
   NIFI_PORT: '8443',
 };
 
-async function nifi_init(ip, port) {
+function nifi_init(ip, port) {
   let nifi_ip_init = ip;
   let nifi_port_init = port;
 
@@ -118,9 +118,13 @@ async function set_state(nifi, token, info, state) {
 
 async function set_run_once(nifi, token, info) {
   let run = await set_state(nifi, token, info, 'RUNNING');
-  console.log(run);
   let stop = await set_state(nifi, token, info, 'STOPPED');
-  console.log(stop);
 }
 
-module.exports = { user_init, get_processor_info, set_state, set_run_once };
+module.exports = {
+  nifi_init,
+  user_init,
+  get_processor_info,
+  set_state,
+  set_run_once,
+};
