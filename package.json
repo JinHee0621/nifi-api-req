@@ -1,6 +1,6 @@
 {
   "name": "nifi-api-req",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,8 @@
   },
   "keywords": [
     "nifi",
-    "nifi-api"
+    "nifi-api",
+    "node"
   ],
   "author": "",
   "license": "MIT",
