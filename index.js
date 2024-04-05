@@ -7,6 +7,7 @@ const NIFI_INIT = {
   NIFI_PORT: '8443',
 };
 
+//NIFI CLUSTER INIT
 function nifi_init(ip, port) {
   let nifi_ip_init = ip;
   let nifi_port_init = port;
