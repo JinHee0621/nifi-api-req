@@ -1,14 +1,16 @@
 const https = require('https');
+const http = require('http');
 const querystring = require('querystring');
 const utils = require('./bin/utils');
 
-const NIFI_INIT = {
-  NIFI_IP: 'localhost',
+const DEFAULT_INIT = {
+  NIFI_IP: '127.0.0.1',
   NIFI_PORT: '8443',
 };
 
 //NIFI CLUSTER INIT
 function nifi_init(ip, port) {
+  if (ip == 'localhost') ip = '127.0.0.1';
   let nifi_ip_init = ip;
   let nifi_port_init = port;
 
@@ -53,33 +55,56 @@ async function user_init(nifi, id, pwd) {
   });
 }
 
-async function get_processor_info(nifi, token, processor_id) {
+async function get_processor_info(nifi, processor_id, token) {
+  let header = '';
+  let req = '';
+
   let path = '/nifi-api/processors/' + processor_id;
-  const header = {
-    Authorization: ' Bearer ' + token,
-    'Content-Type': 'application/x-www-form-urlencoded',
-  };
 
   return new Promise((resolve, reject) => {
-    const req = https.request(
-      utils.requestFormat(nifi.NIFI_IP, nifi.NIFI_PORT, path, 'GET', header),
-      (res) => {
-        let result = '';
-        res.on('data', (data) => {
-          result += data;
-        });
-        res.on('end', () => {
-          resolve(result);
-        });
-      }
-    );
+    if (token !== undefined && token !== null && token !== '') {
+      header = {
+        Authorization: ' Bearer ' + token,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      };
+      req = https.request(
+        utils.requestFormat(nifi.NIFI_IP, nifi.NIFI_PORT, path, 'GET', header),
+        (res) => {
+          let result = '';
+          res.on('data', (data) => {
+            result += data;
+          });
+          res.on('end', () => {
+            resolve(result);
+          });
+        }
+      );
+    } else {
+      header = {
+        'Content-Type': 'application/json',
+      };
+      req = http.request(
+        utils.requestFormat(nifi.NIFI_IP, nifi.NIFI_PORT, path, 'GET', header),
+        (res) => {
+          let result = '';
+          res.on('data', (data) => {
+            result += data;
+          });
+          res.on('end', () => {
+            resolve(result);
+          });
+        }
+      );
+    }
 
     req.end();
   });
 }
+// state Type : 'RUNNING', 'STOPPED', 'RUN_ONCE'
+async function set_state(nifi, info, state, token) {
+  let header = '';
+  let req = '';
 
-// state Type : 'RUNNING', 'STOPPED'
-async function set_state(nifi, token, info, state) {
   info = JSON.parse(info);
   let path = '/nifi-api/processors/' + info['component']['id'];
   const body = JSON.stringify({
@@ -93,36 +118,57 @@ async function set_state(nifi, token, info, state) {
     },
   });
 
-  const header = {
-    Authorization: ' Bearer ' + token,
-    'Content-Type': 'application/json',
-    'Content-Length': body.length,
-  };
-
   return new Promise((resolve, reject) => {
-    const req = https.request(
-      utils.requestFormat(nifi.NIFI_IP, nifi.NIFI_PORT, path, 'PUT', header),
-      (res) => {
-        let buf = '';
-        res.on('data', (data) => {
-          buf += data;
-        });
-        res.on('end', () => {
-          resolve('PROCESSOR ' + state);
-        });
-      }
-    );
+    if (token !== undefined && token !== null && token !== '') {
+      header = {
+        Authorization: ' Bearer ' + token,
+        'Content-Type': 'application/json',
+        'Content-Length': body.length,
+      };
+
+      req = https.request(
+        utils.requestFormat(nifi.NIFI_IP, nifi.NIFI_PORT, path, 'PUT', header),
+        (res) => {
+          let buf = '';
+          res.on('data', (data) => {
+            buf += data;
+          });
+          res.on('end', () => {
+            resolve('PROCESSOR ' + state);
+          });
+        }
+      );
+    } else {
+      header = {
+        'Content-Type': 'application/json',
+        'Content-Length': body.length,
+      };
+
+      req = http.request(
+        utils.requestFormat(nifi.NIFI_IP, nifi.NIFI_PORT, path, 'PUT', header),
+        (res) => {
+          let buf = '';
+          res.on('data', (data) => {
+            buf += data;
+          });
+          res.on('end', () => {
+            resolve('PROCESSOR ' + state);
+          });
+        }
+      );
+    }
+
     req.write(body);
     req.end();
   });
 }
 
-async function set_run_once(nifi, token, info) {
-  let run = await set_state(nifi, token, info, 'RUNNING');
-  let stop = await set_state(nifi, token, info, 'STOPPED');
+async function set_run_once(nifi, info, token) {
+  let run = await set_state(nifi, token, info, 'RUN_ONCE');
 }
 
 module.exports = {
+  DEFAULT_INIT,
   nifi_init,
   user_init,
   get_processor_info,
