@@ -164,7 +164,11 @@ async function set_state(nifi, info, state, token) {
 }
 
 async function set_run_once(nifi, info, token) {
-  let run = await set_state(nifi, token, info, 'RUN_ONCE');
+  if (token !== undefined && token !== null && token !== '') {
+    let run = await set_state(nifi, info, 'RUN_ONCE', token);
+  } else {
+    let run = await set_state(nifi, info, 'RUN_ONCE');
+  }
 }
 
 module.exports = {
