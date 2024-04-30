@@ -6,9 +6,9 @@ Apach Nifi API Page : <https://nifi.apache.org/docs/nifi-docs/rest-api/index.htm
 
 This Version can change state of one Nifi processor to 'RUNNING' or 'STOPPED' and 'RUN_ONCE'
 
-24-04-05 Update
+24-04-30 Update
 
-1.  Chnage 'token' param position so if you want call this lib method Please check 'Sample Code' and fix your code
+1.  Change 'token' param position so if you want call this lib method Please check 'Sample Code' and fix your code
 2.  Add No Auth Case
 
 ## Sample Code
